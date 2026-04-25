@@ -4,9 +4,7 @@ import * as THREE from 'three';
 const MUSIC_YT_ID = 'rXvbRizNzsk'; // leave empty to use local music.mp3 instead
 /* ===================================================================================== */
 
-/* =========================================================
-   CURSOR + TRAIL
-   ========================================================= */
+// CURSOR
 const dot = document.querySelector('.cursor-dot');
 const ring = document.querySelector('.cursor-ring');
 let mx = innerWidth/2, my = innerHeight/2;
@@ -17,59 +15,42 @@ addEventListener('mousemove', e => {
   dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
 });
 
-function cursorLoop(){
+(function cursorLoop(){
   rx += (mx - rx) * 0.16;
   ry += (my - ry) * 0.16;
   ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
   requestAnimationFrame(cursorLoop);
-}
-cursorLoop();
+})();
 
-// Trail particles — spawn tiny dots on movement, fade out
 let lastSpawnTime = 0;
 addEventListener('mousemove', () => {
   const now = performance.now();
-  if (now - lastSpawnTime < 22) return;
+  if(now - lastSpawnTime < 22) return;
   lastSpawnTime = now;
-  spawnTrail(mx, my);
-});
-
-function spawnTrail(x, y){
   const t = document.createElement('div');
   t.className = 'cursor-trail';
   const size = 3 + Math.random() * 5;
-  t.style.width = t.style.height = size + 'px';
-  t.style.left = x + 'px';
-  t.style.top = y + 'px';
+  t.style.cssText = `width:${size}px;height:${size}px;left:${mx}px;top:${my}px`;
   const dx = (Math.random() - .5) * 30;
-  const dy = 10 + Math.random() * 20; // drift down like sinking particles
+  const dy = 10 + Math.random() * 20;
   document.body.appendChild(t);
-  const anim = t.animate([
-    { transform:`translate(-50%,-50%) translate(0,0) scale(1)`, opacity:.8 },
+  t.animate([
+    { transform:`translate(-50%,-50%) scale(1)`, opacity:.8 },
     { transform:`translate(-50%,-50%) translate(${dx}px,${dy}px) scale(.2)`, opacity:0 }
-  ], { duration: 900 + Math.random()*400, easing:'cubic-bezier(.2,.8,.2,1)' });
-  anim.onfinish = () => t.remove();
-}
-
-const hoverables = 'a, button, .clip-card, .product-card, .nav-item, .social-btn, .hero-title span, .product-jar-wrap, .buy-btn, .win-btn, .win-btn-ctrl, .modal-close, .music-btn, .footer a';
-document.querySelectorAll(hoverables).forEach(el => {
-  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  ], { duration: 900 + Math.random()*400, easing:'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => t.remove();
 });
 
-/* =========================================================
-   SMOOTH SCROLL driver
-   ========================================================= */
+const hoverSel = 'a,button,.clip-card,.product-card,.nav-item,.social-btn,.hero-title span,.product-jar-wrap,.buy-btn,.win-btn,.win-btn-ctrl,.modal-close,.music-btn,.footer a,#fish,.avatar-frame';
+document.addEventListener('mouseover', e => {
+  document.body.classList.toggle('cursor-hover', !!e.target.closest(hoverSel));
+});
+
+// SMOOTH SCROLL driver (used by Three.js depth)
 let targetScroll = scrollY, currentScroll = scrollY;
 addEventListener('scroll', () => { targetScroll = scrollY; }, { passive:true });
-(function loop(){
-  currentScroll += (targetScroll - currentScroll) * 0.08;
-  requestAnimationFrame(loop);
-})();
+(function loop(){ currentScroll += (targetScroll - currentScroll) * 0.08; requestAnimationFrame(loop); })();
 
-/* =========================================================
-   THREE.JS — deeper, darker ocean
-   ========================================================= */
+// THREE.JS BACKGROUND
 const canvas = document.getElementById('bg-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -87,7 +68,6 @@ const bgMat = new THREE.ShaderMaterial({
     varying vec2 vUv;
     uniform float uTime, uDepth;
 
-    // Darker, calmer palette
     vec3 cSurface = vec3(0.18, 0.42, 0.60);
     vec3 cShallow = vec3(0.08, 0.24, 0.42);
     vec3 cMid     = vec3(0.02, 0.10, 0.22);
@@ -116,7 +96,6 @@ const bgMat = new THREE.ShaderMaterial({
       vec2 q = vUv - 0.5;
       col *= 1.0 - dot(q, q) * 0.5;
 
-      // softer caustics, only near surface
       float cStr = smoothstep(0.25, 0.0, uDepth);
       if(cStr > 0.001){
         vec2 cp = vUv * 2.5;
@@ -135,7 +114,6 @@ const bgMesh = new THREE.Mesh(new THREE.PlaneGeometry(2,2), bgMat);
 bgMesh.renderOrder = -1;
 scene.add(bgMesh);
 
-/* Bubbles */
 const particleCount = 400;
 const pGeo = new THREE.BufferGeometry();
 const positions = new Float32Array(particleCount*3);
@@ -209,9 +187,7 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix();
 });
 
-/* =========================================================
-   DEPTH INDICATOR
-   ========================================================= */
+// DEPTH INDICATOR
 const depthValueEl = document.querySelector('.depth-value');
 (function updateDepth(){
   const maxScroll = document.body.scrollHeight - innerHeight;
@@ -220,9 +196,7 @@ const depthValueEl = document.querySelector('.depth-value');
   requestAnimationFrame(updateDepth);
 })();
 
-/* =========================================================
-   NAV — Telegram-style sliding indicator
-   ========================================================= */
+// NAV
 const navPill = document.querySelector('.nav-pill');
 const navIndicator = document.querySelector('.nav-indicator');
 const navItems = [...document.querySelectorAll('.nav-item')];
@@ -235,10 +209,10 @@ function moveIndicator(el){
   navIndicator.style.width = r.width + 'px';
 }
 
-// initial position after fonts load
-requestAnimationFrame(() => moveIndicator(document.querySelector('.nav-item.active')));
-addEventListener('load', () => moveIndicator(document.querySelector('.nav-item.active')));
-addEventListener('resize', () => moveIndicator(document.querySelector('.nav-item.active')));
+const activeNavItem = () => document.querySelector('.nav-item.active');
+requestAnimationFrame(() => moveIndicator(activeNavItem()));
+addEventListener('load', () => moveIndicator(activeNavItem()));
+addEventListener('resize', () => moveIndicator(activeNavItem()));
 
 navItems.forEach(item => {
   item.addEventListener('click', e => {
@@ -256,7 +230,6 @@ navPill.addEventListener('mouseleave', () => {
   moveIndicator(document.querySelector('.nav-item.active'));
 });
 
-// Observe sections to update active state
 const sectionObserver = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if(e.isIntersecting && e.intersectionRatio > 0.45){
@@ -271,9 +244,7 @@ const sectionObserver = new IntersectionObserver(entries => {
 }, { threshold:[.45, .6] });
 document.querySelectorAll('section.section').forEach(s => sectionObserver.observe(s));
 
-/* =========================================================
-   PRODUCTS — SVG jars + drag + flee buy + windows error
-   ========================================================= */
+// PRODUCTS
 const PRODUCTS = [
   { name:'Ossetra Classic',      sub:'Чёрная осетровая · 50g',   price:149,  color:{top:'#2a2416', mid:'#4a3a1f', bead:'#1a1208'}, bead:'dark' },
   { name:'Beluga Reserve',       sub:'Белужья премиум · 50g',    price:289,  color:{top:'#36302a', mid:'#5c4f3d', bead:'#1e1812'}, bead:'beluga' },
@@ -284,7 +255,6 @@ const PRODUCTS = [
 ];
 
 function jarSVG(p){
-  // Unique gradient ids per jar to avoid conflicts
   const uid = Math.random().toString(36).slice(2,8);
   return `
   <svg class="product-jar-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
@@ -309,26 +279,17 @@ function jarSVG(p){
         <circle cx="3.3" cy="3.3" r=".7" fill="rgba(255,255,255,.4)"/>
       </pattern>
     </defs>
-    <!-- caviar fill -->
     <ellipse cx="80" cy="70" rx="58" ry="14" fill="url(#cav-${uid})"/>
     <path d="M22,70 L22,150 Q22,180 80,180 Q138,180 138,150 L138,70 Z" fill="url(#cav-${uid})"/>
-    <!-- beads texture -->
-    <path d="M22,70 L22,150 Q22,180 80,180 Q138,180 138,150 L138,70 Q138,84 80,84 Q22,84 22,70 Z"
-          fill="url(#beads-${uid})" opacity=".85"/>
-    <!-- glass highlight (front) -->
-    <path d="M22,70 L22,150 Q22,180 80,180 Q138,180 138,150 L138,70"
-          fill="url(#glass-${uid})" opacity=".35" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
-    <!-- glass rim -->
+    <path d="M22,70 L22,150 Q22,180 80,180 Q138,180 138,150 L138,70 Q138,84 80,84 Q22,84 22,70 Z" fill="url(#beads-${uid})" opacity=".85"/>
+    <path d="M22,70 L22,150 Q22,180 80,180 Q138,180 138,150 L138,70" fill="url(#glass-${uid})" opacity=".35" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
     <ellipse cx="80" cy="70" rx="58" ry="10" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
-    <!-- lid -->
     <ellipse cx="80" cy="52" rx="60" ry="12" fill="url(#lid-${uid})"/>
     <rect x="20" y="48" width="120" height="14" rx="6" fill="url(#lid-${uid})"/>
     <ellipse cx="80" cy="48" rx="60" ry="8" fill="#d9c489" opacity=".55"/>
-    <!-- label -->
     <rect x="38" y="110" width="84" height="46" rx="3" fill="rgba(255,255,255,.92)" stroke="rgba(0,0,0,.15)"/>
     <text x="80" y="128" text-anchor="middle" font-family="'Unbounded',sans-serif" font-size="10" font-weight="600" fill="#0a1a2e" letter-spacing=".1em">VA1FY</text>
     <text x="80" y="144" text-anchor="middle" font-family="'Manrope',sans-serif" font-size="7" fill="#4a5a6a" letter-spacing=".15em">PREMIUM CAVIAR</text>
-    <!-- specular -->
     <path d="M30,80 Q26,120 32,165" stroke="rgba(255,255,255,.35)" stroke-width="3" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
@@ -349,12 +310,6 @@ grid.innerHTML = PRODUCTS.map((p, i) => `
   </article>
 `).join('');
 
-// Re-attach cursor hover on new elements
-document.querySelectorAll('.product-card, .product-jar-wrap, .buy-btn').forEach(el => {
-  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-});
-
 // Parallax shine on card
 document.querySelectorAll('.product-card').forEach(card => {
   card.addEventListener('mousemove', e => {
@@ -372,7 +327,6 @@ document.querySelectorAll('.product-card').forEach(card => {
   card.addEventListener('mouseleave', () => { card.style.transform = ''; });
 });
 
-/* --- Drag jars between cards --- */
 const allWraps = () => [...document.querySelectorAll('[data-drag]')];
 
 function setupDrag(wrap){
@@ -396,10 +350,7 @@ function setupDrag(wrap){
     if(!dragging) return;
     ox = e.clientX - sx;
     oy = e.clientY - sy;
-    const rot = Math.max(-25, Math.min(25, ox * 0.12));
-    svg.style.transform = `translate(${ox}px, ${oy}px) rotate(${rot}deg) scale(1.08)`;
-
-    // Highlight potential drop target
+    svg.style.transform = `translate(${ox}px,${oy}px) rotate(${Math.max(-25,Math.min(25,ox*.12))}deg) scale(1.08)`;
     allWraps().forEach(w => w.classList.remove('drop-target'));
     const target = findDropTarget(e.clientX, e.clientY, wrap);
     if(target) target.classList.add('drop-target');
@@ -413,11 +364,9 @@ function setupDrag(wrap){
     allWraps().forEach(w => w.classList.remove('drop-target'));
     wrap.style.zIndex = '';
 
-    if (target && target !== wrap){
-      // Swap SVGs between wrap and target with smooth animation
+    if(target && target !== wrap){
       swapJars(wrap, target);
     } else {
-      // Spring back
       svg.style.transition = 'transform .8s cubic-bezier(.34,1.56,.64,1)';
       svg.style.transform = '';
       setTimeout(() => { if(svg) svg.style.zIndex = ''; }, 850);
@@ -440,66 +389,71 @@ function swapJars(a, b){
   const aSvg = a.querySelector('.product-jar-svg');
   const bSvg = b.querySelector('.product-jar-svg');
   if(!aSvg || !bSvg) return;
-
-  // Measure current positions
   const aRect = aSvg.getBoundingClientRect();
   const bRect = bSvg.getBoundingClientRect();
-
-  // Reset transforms and move DOM
-  aSvg.style.transition = 'none';
-  bSvg.style.transition = 'none';
-  aSvg.style.transform = '';
-  bSvg.style.transform = '';
-
-  a.appendChild(bSvg);
-  b.appendChild(aSvg);
-
-  // FLIP: compute delta from old to new and animate back to 0
+  aSvg.style.transition = bSvg.style.transition = 'none';
+  aSvg.style.transform  = bSvg.style.transform  = '';
+  a.appendChild(bSvg); b.appendChild(aSvg);
   const aNew = aSvg.getBoundingClientRect();
   const bNew = bSvg.getBoundingClientRect();
-  aSvg.style.transform = `translate(${aRect.left - aNew.left}px, ${aRect.top - aNew.top}px)`;
-  bSvg.style.transform = `translate(${bRect.left - bNew.left}px, ${bRect.top - bNew.top}px)`;
-
+  aSvg.style.transform = `translate(${aRect.left-aNew.left}px,${aRect.top-aNew.top}px)`;
+  bSvg.style.transform = `translate(${bRect.left-bNew.left}px,${bRect.top-bNew.top}px)`;
   requestAnimationFrame(() => {
-    aSvg.style.transition = 'transform .7s cubic-bezier(.34,1.56,.64,1)';
-    bSvg.style.transition = 'transform .7s cubic-bezier(.34,1.56,.64,1)';
-    aSvg.style.transform = '';
-    bSvg.style.transform = '';
+    const tr = 'transform .7s cubic-bezier(.34,1.56,.64,1)';
+    aSvg.style.transition = bSvg.style.transition = tr;
+    aSvg.style.transform  = bSvg.style.transform  = '';
   });
-
-  setTimeout(() => {
-    aSvg.style.zIndex = '';
-    bSvg.style.zIndex = '';
-  }, 750);
+  setTimeout(() => { aSvg.style.zIndex = bSvg.style.zIndex = ''; }, 750);
 }
 
 document.querySelectorAll('[data-drag]').forEach(setupDrag);
 
-/* =========================================================
-   AVATAR CARD 3D TILT
-   ========================================================= */
+// AVATAR TILT + FLIP
 const avatarFrame = document.querySelector('.avatar-frame');
-if (avatarFrame){
-  const TILT = 18; // max degrees
+const avatarImg = document.querySelector('.avatar-img');
+if(avatarFrame){
+  const photos = [
+    'photo_2026-04-24_19-18-02.jpg',
+    'photo_2026-04-24_22-53-55.jpg',
+    'photo_2026-04-24_23-51-32.jpg',
+    'photo_2026-04-25_02-42-28.jpg',
+  ];
+  photos.forEach(src => { const i = new Image(); i.src = src; });
+  let photoIdx = 0;
+  let flipping = false;
+
   avatarFrame.addEventListener('mousemove', e => {
-    avatarFrame.style.animation = 'none'; // pause float so JS transform isn't overridden
+    if(flipping) return;
+    avatarFrame.style.animation = 'none';
     const r = avatarFrame.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width  - 0.5;
     const y = (e.clientY - r.top)  / r.height - 0.5;
-    const rotX = -y * TILT;
-    const rotY =  x * TILT;
     avatarFrame.style.setProperty('--tx', ((x+0.5)*100)+'%');
     avatarFrame.style.setProperty('--ty', ((y+0.5)*100)+'%');
-    avatarFrame.style.transform =
-      `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
+    avatarFrame.style.transform = `perspective(900px) rotateX(${-y*18}deg) rotateY(${x*18}deg) scale(1.03)`;
   });
   avatarFrame.addEventListener('mouseleave', () => {
-    avatarFrame.style.animation = '';
-    avatarFrame.style.transform = '';
+    if(flipping) return;
+    avatarFrame.style.animation = avatarFrame.style.transform = '';
+  });
+
+  avatarFrame.addEventListener('click', () => {
+    if(flipping || !avatarImg) return;
+    flipping = true;
+    avatarFrame.style.animation = 'none';
+    avatarFrame.classList.add('flipping');
+    setTimeout(() => {
+      photoIdx = (photoIdx + 1) % photos.length;
+      avatarImg.src = photos[photoIdx];
+    }, 300);
+    setTimeout(() => {
+      avatarFrame.classList.remove('flipping');
+      avatarFrame.style.transform = '';
+      flipping = false;
+    }, 650);
   });
 }
 
-/* --- BUY button that flees then throws Windows error --- */
 const winError = document.getElementById('win-error');
 
 function playBeep(freq=800, dur=120){
@@ -595,14 +549,12 @@ document.querySelectorAll('[data-buy]').forEach(btn => {
   }
 
   btn.addEventListener('click', e => {
-    if (locked) return;
+    if(locked) return;
     e.stopPropagation();
     clicks++;
-
-    if (clicks >= maxClicks){
+    if(clicks >= maxClicks){
       locked = true;
-      // One last big jump, then error
-      if (!anchored) anchorCurrent();
+      if(!anchored) anchorCurrent();
       requestAnimationFrame(() => requestAnimationFrame(() => {
         placeRandomly();
         playBeep(400, 200);
@@ -610,22 +562,13 @@ document.querySelectorAll('[data-buy]').forEach(btn => {
       }));
       return;
     }
-
     playBeep(900 + clicks * 150, 70);
-
-    if (!anchored){
-      anchorCurrent();
-      // Double-rAF: first frame locks position, second frame triggers transition to new spot
-      requestAnimationFrame(() => requestAnimationFrame(placeRandomly));
-    } else {
-      placeRandomly();
-    }
+    if(!anchored){ anchorCurrent(); requestAnimationFrame(() => requestAnimationFrame(placeRandomly)); }
+    else placeRandomly();
   });
 });
 
-/* =========================================================
-   CLIP CARDS + MODAL
-   ========================================================= */
+// CLIPS + MODAL
 const modal = document.getElementById('modal');
 const modalIframe = document.getElementById('modal-iframe');
 const modalClose = modal.querySelector('.modal-close');
@@ -633,15 +576,9 @@ const modalBackdrop = modal.querySelector('.modal-backdrop');
 
 document.querySelectorAll('.clip-card').forEach(card => {
   const id = card.dataset.yt;
-  // hqdefault exists for every YT video (480x360)
   card.style.backgroundImage = `url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)`;
-  // Try to upgrade to maxres if available
   const hi = new Image();
-  hi.onload = () => {
-    if(hi.naturalWidth > 200){
-      card.style.backgroundImage = `url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg)`;
-    }
-  };
+  hi.onload = () => { if(hi.naturalWidth > 200) card.style.backgroundImage = `url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg)`; };
   hi.src = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
 
   card.addEventListener('click', () => {
@@ -660,9 +597,7 @@ modalClose.addEventListener('click', closeModal);
 modalBackdrop.addEventListener('click', closeModal);
 addEventListener('keydown', e => { if(e.key === 'Escape'){ closeModal(); closeWinError(); } });
 
-/* =========================================================
-   MUSIC — YouTube (if MUSIC_YT_ID set) or local music.mp3
-   ========================================================= */
+// MUSIC
 const audioEl = document.getElementById('bg-audio');
 const musicBtn = document.getElementById('music-toggle');
 const musicLabel = musicBtn.querySelector('.music-label');
@@ -672,8 +607,7 @@ let ytPlayer = null;
 let ytReady = false;
 let isPlaying = false;
 
-if (MUSIC_YT_ID){
-  // Load YouTube IFrame API
+if(MUSIC_YT_ID){
   const ytContainer = document.getElementById('yt-music');
   Object.assign(ytContainer.style, {
     position:'fixed', bottom:'-10px', right:'-10px',
@@ -697,19 +631,20 @@ if (MUSIC_YT_ID){
 }
 
 musicBtn.addEventListener('click', async () => {
-  if (MUSIC_YT_ID && ytReady){
-    if (isPlaying){ ytPlayer.pauseVideo(); isPlaying = false; musicBtn.classList.remove('playing'); }
-    else          { ytPlayer.playVideo();  isPlaying = true;  musicBtn.classList.add('playing'); }
+  if(MUSIC_YT_ID && ytReady){
+    isPlaying = !isPlaying;
+    isPlaying ? ytPlayer.playVideo() : ytPlayer.pauseVideo();
+    musicBtn.classList.toggle('playing', isPlaying);
     return;
   }
-  if (MUSIC_YT_ID && !ytReady){
+  if(MUSIC_YT_ID){
     musicLabel.textContent = 'загрузка…';
     setTimeout(() => musicLabel.textContent = 'Музыка', 1500);
     return;
   }
   try {
-    if (audioEl.paused){ await audioEl.play(); musicBtn.classList.add('playing'); }
-    else               { audioEl.pause();      musicBtn.classList.remove('playing'); }
+    if(audioEl.paused){ await audioEl.play(); musicBtn.classList.add('playing'); }
+    else              { audioEl.pause();      musicBtn.classList.remove('playing'); }
   } catch {
     musicBtn.classList.remove('playing');
     musicLabel.textContent = 'нет music.mp3';
@@ -717,43 +652,27 @@ musicBtn.addEventListener('click', async () => {
   }
 });
 
-/* =========================================================
-   SECTION REVEAL
-   ========================================================= */
+// SECTION REVEAL
 const revealObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if(e.isIntersecting){
-      e.target.style.opacity = '1';
-      e.target.style.transform = 'translateY(0)';
-    }
-  });
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold:.08 });
+document.querySelectorAll('.section:not(.section-hero)').forEach(s => revealObs.observe(s));
 
-document.querySelectorAll('.section:not(.section-hero)').forEach(s => {
-  s.style.opacity = '0';
-  s.style.transform = 'translateY(40px)';
-  s.style.transition = 'opacity 1.2s cubic-bezier(.2,.8,.2,1), transform 1.2s cubic-bezier(.2,.8,.2,1)';
-  revealObs.observe(s);
-});
-
-/* =========================================================
-   FLOATING FISH
-   ========================================================= */
+// FISH
 (function(){
   const fish = document.getElementById('fish');
   const reviewModal = document.getElementById('review-modal');
   const reviewVideo = document.getElementById('review-video');
   const reviewClose = reviewModal.querySelector('.review-close');
   const reviewBackdrop = reviewModal.querySelector('.review-backdrop');
+  const fishSvg  = fish.querySelector('svg');
+  const fishBody = fish.querySelector('.fish-body');
 
-  // Fish position & velocity
   let fx = innerWidth  - 160;
   let fy = innerHeight - 120;
   let vx = -(1.4 + Math.random() * 0.8);
   let vy = -(0.6 + Math.random() * 0.6);
-  let facingLeft = true; // true = swimming left (default SVG direction)
-
-  // Target the fish occasionally drifts toward to feel "alive"
+  let facingLeft = true;
   let tx = innerWidth / 2, ty = innerHeight / 2;
   let targetTimer = 0;
 
@@ -761,7 +680,7 @@ document.querySelectorAll('.section:not(.section-hero)').forEach(s => {
     const pad = 120;
     tx = pad + Math.random() * (innerWidth  - pad * 2);
     ty = pad + Math.random() * (innerHeight - pad * 2);
-    targetTimer = 180 + Math.random() * 240; // frames
+    targetTimer = 180 + Math.random() * 240;
   }
   pickNewTarget();
 
@@ -771,81 +690,62 @@ document.querySelectorAll('.section:not(.section-hero)').forEach(s => {
     targetTimer--;
     if(targetTimer <= 0) pickNewTarget();
 
-    // Gently steer toward target
     const dx = tx - fx, dy = ty - fy;
     const dist = Math.hypot(dx, dy);
-    if(dist > 40){
-      vx += (dx / dist) * 0.04;
-      vy += (dy / dist) * 0.025;
-    }
+    if(dist > 40){ vx += (dx/dist)*.04; vy += (dy/dist)*.025; }
 
-    // Speed cap — feels like a lazy fish
     const speed = Math.hypot(vx, vy);
-    const maxSpeed = 2.4;
-    if(speed > maxSpeed){ vx = vx/speed*maxSpeed; vy = vy/speed*maxSpeed; }
+    if(speed > 2.4){ vx = vx/speed*2.4; vy = vy/speed*2.4; }
 
-    // Light random wiggle
     vx += (Math.random() - 0.5) * 0.06;
     vy += (Math.random() - 0.5) * 0.04;
-
     fx += vx; fy += vy;
 
-    // Bounce off walls
-    if(fx < 0)             { fx = 0;               vx = Math.abs(vx); }
-    if(fx > innerWidth-W)  { fx = innerWidth-W;    vx = -Math.abs(vx); }
-    if(fy < 0)             { fy = 0;               vy = Math.abs(vy); }
-    if(fy > innerHeight-H) { fy = innerHeight-H;   vy = -Math.abs(vy); }
+    if(fx < 0)            { fx = 0;            vx =  Math.abs(vx); }
+    if(fx > innerWidth-W) { fx = innerWidth-W;  vx = -Math.abs(vx); }
+    if(fy < 0)            { fy = 0;            vy =  Math.abs(vy); }
+    if(fy > innerHeight-H){ fy = innerHeight-H; vy = -Math.abs(vy); }
 
-    // Flip fish to face direction of travel
-    const shouldFaceLeft = vx < 0;
-    if(shouldFaceLeft !== facingLeft){
-      facingLeft = shouldFaceLeft;
-      fish.querySelector('svg').style.transform = facingLeft ? '' : 'scaleX(-1)';
+    const left = vx < 0;
+    if(left !== facingLeft){ facingLeft = left; fishSvg.style.transform = left ? '' : 'scaleX(-1)'; }
+
+    if(!fish.classList.contains('hidden')){
+      fish.style.left = fx + 'px';
+      fish.style.top  = fy + 'px';
+      fishBody.style.transform = `rotate(${Math.sin(performance.now()*.006)*3}deg)`;
     }
-
-    // Subtle vertical tail-wag via skew
-    const wag = Math.sin(performance.now() * 0.006) * 3;
-    fish.style.left = fx + 'px';
-    fish.style.top  = fy + 'px';
-    fish.querySelector('.fish-body').style.transform = `rotate(${wag}deg)`;
 
     requestAnimationFrame(fishLoop);
   }
   fishLoop();
 
-  // "Excited" idle nudge — fish occasionally wiggles on its own
   setInterval(() => {
     fish.classList.add('excited');
     setTimeout(() => fish.classList.remove('excited'), 450);
   }, 4000 + Math.random() * 3000);
 
-  // Cursor hover — add to global hover listeners
-  fish.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-  fish.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  const rvPlay      = document.getElementById('rv-play');
+  const rvPlayIcon  = document.getElementById('rv-play-icon');
+  const rvPauseIcon = document.getElementById('rv-pause-icon');
+  const rvMute      = document.getElementById('rv-mute');
+  const rvSeek      = document.getElementById('rv-seek');
+  const rvFill      = document.getElementById('rv-fill');
+  const rvCur       = document.getElementById('rv-cur');
+  const rvDur       = document.getElementById('rv-dur');
 
-  // Click — open review modal
+  function setPlayState(playing){
+    rvPlayIcon.style.display  = playing ? 'none' : '';
+    rvPauseIcon.style.display = playing ? '' : 'none';
+  }
+  function fmtTime(s){ return Math.floor(s/60)+':'+(String(Math.floor(s%60)).padStart(2,'0')); }
+
   fish.addEventListener('click', () => {
     fish.classList.add('excited');
     setTimeout(() => fish.classList.remove('excited'), 450);
     reviewModal.classList.add('active');
     document.body.style.overflow = 'hidden';
-    reviewVideo.play().then(() => {
-      document.getElementById('rv-play-icon').style.display='none';
-      document.getElementById('rv-pause-icon').style.display='';
-    }).catch(()=>{});
+    reviewVideo.play().then(() => setPlayState(true)).catch(()=>{});
   });
-
-  // Custom video controls
-  const rvPlay  = document.getElementById('rv-play');
-  const rvPlayIcon  = document.getElementById('rv-play-icon');
-  const rvPauseIcon = document.getElementById('rv-pause-icon');
-  const rvMute  = document.getElementById('rv-mute');
-  const rvSeek  = document.getElementById('rv-seek');
-  const rvFill  = document.getElementById('rv-fill');
-  const rvCur   = document.getElementById('rv-cur');
-  const rvDur   = document.getElementById('rv-dur');
-
-  function fmtTime(s){ const m=Math.floor(s/60); return m+':'+(String(Math.floor(s%60)).padStart(2,'0')); }
 
   reviewVideo.addEventListener('loadedmetadata', () => { rvDur.textContent = fmtTime(reviewVideo.duration); });
   reviewVideo.addEventListener('timeupdate', () => {
@@ -854,23 +754,27 @@ document.querySelectorAll('.section:not(.section-hero)').forEach(s => {
     rvSeek.value = pct;
     rvCur.textContent = fmtTime(reviewVideo.currentTime);
   });
-  reviewVideo.addEventListener('ended', () => { rvPlayIcon.style.display=''; rvPauseIcon.style.display='none'; });
+  reviewVideo.addEventListener('ended', () => setPlayState(false));
 
   rvPlay.addEventListener('click', () => {
-    if(reviewVideo.paused){ reviewVideo.play(); rvPlayIcon.style.display='none'; rvPauseIcon.style.display=''; }
-    else { reviewVideo.pause(); rvPlayIcon.style.display=''; rvPauseIcon.style.display='none'; }
+    if(reviewVideo.paused){ reviewVideo.play(); setPlayState(true); }
+    else                  { reviewVideo.pause(); setPlayState(false); }
   });
   rvMute.addEventListener('click', () => { reviewVideo.muted = !reviewVideo.muted; rvMute.style.opacity = reviewVideo.muted ? '.4' : '1'; });
-  rvSeek.addEventListener('input', () => {
-    if(reviewVideo.duration) reviewVideo.currentTime = rvSeek.value / 100 * reviewVideo.duration;
-  });
+  rvSeek.addEventListener('input', () => { if(reviewVideo.duration) reviewVideo.currentTime = rvSeek.value / 100 * reviewVideo.duration; });
+
+  function hideFish(){
+    fish.classList.add('hidden');
+    document.body.classList.remove('cursor-hover');
+  }
 
   function closeReview(){
     reviewModal.classList.remove('active');
     reviewVideo.pause();
     reviewVideo.currentTime = 0;
-    rvPlayIcon.style.display=''; rvPauseIcon.style.display='none';
+    setPlayState(false);
     document.body.style.overflow = '';
+    hideFish();
   }
   reviewClose.addEventListener('click', closeReview);
   reviewBackdrop.addEventListener('click', closeReview);
