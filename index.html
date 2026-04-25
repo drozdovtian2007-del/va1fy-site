@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VA1FY — Premium Caviar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="cursor-dot"></div>
+<div class="cursor-ring"></div>
+
+<canvas id="bg-canvas"></canvas>
+<div class="vignette"></div>
+
+<!-- Top pill nav with sliding indicator -->
+<nav class="nav-pill glass">
+  <div class="nav-indicator"></div>
+  <a href="#home"       data-target="home"       class="nav-item active">Главная</a>
+  <a href="#about"      data-target="about"      class="nav-item">Обо мне</a>
+  <a href="#products"   data-target="products"   class="nav-item">Икра</a>
+  <a href="#highlights" data-target="highlights" class="nav-item">Хайлайты</a>
+</nav>
+
+<!-- Floating controls (music + depth) -->
+<button id="music-toggle" class="glass music-btn" aria-label="Музыка">
+  <svg class="icon-on"  viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 10v4M6 8v8M9 5v14M12 9v6M15 6v12M18 10v4M21 12h0"/></svg>
+  <svg class="icon-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 10v4M6 8v8M9 11v2M12 11v2M15 11v2M18 11v2"/><line x1="3" y1="21" x2="21" y2="3"/></svg>
+  <span class="music-label">Музыка</span>
+</button>
+
+<div class="depth-indicator glass">
+  <span class="depth-label">Глубина</span>
+  <span class="depth-value">0m</span>
+</div>
+
+<main>
+
+  <section id="home" class="section section-hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">PREMIUM CAVIAR · BY VA1FY</div>
+      <h1 class="hero-title">
+        <span>V</span><span>A</span><span>1</span><span>F</span><span>Y</span>
+      </h1>
+    </div>
+    <div class="scroll-hint"><span></span></div>
+  </section>
+
+  <section id="about" class="section section-about">
+    <div class="about-grid">
+      <div class="about-text">
+        <div class="section-label">01 — Обо мне</div>
+        <h2>Я — Va1fy.</h2>
+        <p>Креатор, игрок, коллекционер вкусов. Я делюсь страстью к двум вещам: к фортнайту и к настоящей, честной икре.</p>
+        <p>Каждая банка — ручной отбор, холодная цепь, прямая поставка. Никакого маркетинга — только качество, которое можно попробовать.</p>
+        <div class="about-stats">
+          <div><strong>6</strong><span>сортов</span></div>
+          <div><strong>100%</strong><span>натурально</span></div>
+          <div><strong>24/7</strong><span>доставка</span></div>
+        </div>
+        <div class="socials">
+          <a href="https://t.me/va1fy" target="_blank" rel="noopener" data-social="tg" class="social-btn glass" aria-label="Telegram">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+            <div><span>Telegram</span><em class="social-sub">@va1fy</em></div>
+          </a>
+          <a href="https://youtube.com/@valfy777?si=FjTx67GdJUdnPNs" target="_blank" rel="noopener" data-social="yt" class="social-btn glass" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1.1-1.8-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6c-1 .3-1.8 1.1-2.1 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1.1 1.8 2.1 2.1 1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6c1-.3 1.8-1.1 2.1-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+            <div><span>YouTube</span><em class="social-sub">@valfy777</em></div>
+          </a>
+          <a href="https://www.instagram.com/valfy4u?igsh=c29rdWVwY25yOHVj&utm_source=qr" target="_blank" rel="noopener" data-social="ig" class="social-btn glass" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            <div><span>Instagram</span><em class="social-sub">@valfy4u</em></div>
+          </a>
+          <a href="https://fortnitetracker.com/profile/all/nef0r%20devo4ka" target="_blank" rel="noopener" data-social="fn" class="social-btn glass" aria-label="Fortnite Tracker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>
+            <div><span>FN Tracker</span><em class="social-sub">nef0r devo4ka</em></div>
+          </a>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="avatar-frame glass">
+          <img class="avatar-img" src="photo_2026-04-24_19-18-02.jpg" alt="Va1fy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+          <div class="avatar-fallback">
+            <div class="orb"></div>
+          </div>
+          <div class="avatar-ring"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="products" class="section section-products">
+    <div class="section-label center">02 — Коллекция</div>
+    <h2 class="section-title">Икра</h2>
+
+    <div class="products-grid" id="products-grid"></div>
+    <p class="products-hint">↑ тяни банки мышкой — они живые</p>
+  </section>
+
+  <section id="highlights" class="section section-highlights">
+    <div class="section-label center">03 — Хайлайты</div>
+    <h2 class="section-title">Fortnite</h2>
+
+    <div class="clips-grid">
+      <div class="clip-card glass" data-yt="YZXvDDRl2rU"></div>
+      <div class="clip-card glass" data-yt="ADib3JPHHGY"></div>
+      <div class="clip-card glass" data-yt="ZxTdHUVszBw"></div>
+      <div class="clip-card glass" data-yt="tnUAUt1MlZE"></div>
+      <div class="clip-card glass" data-yt="GBOoWPuzs0s"></div>
+      <div class="clip-card glass" data-yt="NPfy2-HpbsA"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>Creat for Va1fy by </span>
+    <a href="http://horshevsky.site/" target="_blank" rel="noopener">horshevsky</a>
+  </footer>
+
+</main>
+
+<!-- Floating fish -->
+<div id="fish" class="fish" title="Нажми на меня!">
+  <div class="fish-body">
+    <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fishGrad" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#7ecfff"/>
+          <stop offset="55%" stop-color="#2a8fcc"/>
+          <stop offset="100%" stop-color="#0d4a80"/>
+        </radialGradient>
+        <radialGradient id="fishBelly" cx="50%" cy="70%" r="60%">
+          <stop offset="0%" stop-color="rgba(255,255,255,.55)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+      </defs>
+      <!-- tail -->
+      <path d="M90,40 Q115,15 118,5 Q105,38 118,75 Q115,65 90,40Z" fill="url(#fishGrad)" opacity=".85"/>
+      <!-- body -->
+      <ellipse cx="52" cy="40" rx="52" ry="30" fill="url(#fishGrad)"/>
+      <!-- belly sheen -->
+      <ellipse cx="52" cy="40" rx="52" ry="30" fill="url(#fishBelly)" opacity=".6"/>
+      <!-- fin top -->
+      <path d="M38,12 Q52,2 68,10 Q58,18 44,18Z" fill="#1a6fa8" opacity=".8"/>
+      <!-- scales -->
+      <path d="M30,32 Q38,26 46,32" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2"/>
+      <path d="M44,28 Q52,22 60,28" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2"/>
+      <path d="M58,30 Q66,24 74,30" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2"/>
+      <path d="M36,42 Q44,36 52,42" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.2"/>
+      <path d="M50,38 Q58,32 66,38" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.2"/>
+      <!-- eye -->
+      <circle cx="18" cy="36" r="7" fill="rgba(255,255,255,.9)"/>
+      <circle cx="19" cy="35" r="4" fill="#0a1e30"/>
+      <circle cx="17" cy="33" r="1.5" fill="rgba(255,255,255,.9)"/>
+      <!-- mouth -->
+      <path d="M6,42 Q10,46 8,50" fill="none" stroke="#1a6fa8" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- specular -->
+      <path d="M20,22 Q36,14 55,18" stroke="rgba(255,255,255,.5)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="fish-ripple"></div>
+</div>
+
+<!-- Fish review modal -->
+<div class="review-modal" id="review-modal">
+  <div class="review-backdrop"></div>
+  <div class="review-panel glass">
+    <div class="review-header">
+      <span class="review-title">💬 Отзыв покупателя <a href="https://playerok.com/profile/SIR-KASSIR/products" target="_blank" rel="noopener" class="review-name-link">SirKassir</a></span>
+      <button class="review-close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="review-video-wrap">
+      <video id="review-video" src="video.mp4" playsinline></video>
+    </div>
+    <div class="review-controls">
+      <button class="rv-btn" id="rv-play" aria-label="Play">
+        <svg id="rv-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="rv-pause-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>
+      </button>
+      <div class="rv-progress-wrap">
+        <div class="rv-progress-bar">
+          <div class="rv-progress-fill" id="rv-fill"></div>
+          <input class="rv-seek" id="rv-seek" type="range" min="0" max="100" value="0" step="0.1">
+        </div>
+        <div class="rv-time"><span id="rv-cur">0:00</span> / <span id="rv-dur">0:00</span></div>
+      </div>
+      <button class="rv-btn" id="rv-mute" aria-label="Mute">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- YouTube modal with frame -->
+<div class="modal" id="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel glass">
+    <div class="modal-header">
+      <span class="modal-dots"><i></i><i></i><i></i></span>
+      <span class="modal-title">Va1fy · Clip</span>
+      <button class="modal-close" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-frame">
+      <iframe id="modal-iframe" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Windows error dialog -->
+<div class="win-error" id="win-error">
+  <div class="win-error-dialog">
+    <div class="win-titlebar">
+      <div class="win-title">
+        <svg viewBox="0 0 16 16" width="14" height="14"><rect width="16" height="16" fill="#fff"/><path d="M3 3h4v4H3zM9 3h4v4H9zM3 9h4v4H3zM9 9h4v4H9z" fill="#c0392b"/></svg>
+        <span>Ошибка системы</span>
+      </div>
+      <div class="win-controls">
+        <button class="win-btn-ctrl" data-act="min">—</button>
+        <button class="win-btn-ctrl" data-act="max">▢</button>
+        <button class="win-btn-ctrl win-btn-close" data-act="close">×</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="win-icon">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="22" fill="#e74c3c"/>
+          <circle cx="24" cy="24" r="22" fill="none" stroke="#a93226" stroke-width="1.5"/>
+          <path d="M15 15l18 18M33 15L15 33" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="win-text">
+        <strong>CaviarPay.exe перестал работать</strong>
+        <p>Платёжная система не отвечает. Возможно, ваш счёт слишком мал, чтобы позволить себе эту икру.</p>
+        <p class="win-code">Код ошибки: <code>0xVA1FY_BROKE</code></p>
+      </div>
+    </div>
+    <div class="win-footer">
+      <button class="win-btn" data-act="ok">OK</button>
+      <button class="win-btn" data-act="cancel">Отмена</button>
+      <button class="win-btn" data-act="details">Подробнее</button>
+    </div>
+  </div>
+</div>
+
+<!-- Background music. Paste a YouTube video ID in main.js → MUSIC_YT_ID. Falls back to local music.mp3. -->
+<div id="yt-music"></div>
+<audio id="bg-audio" src="music.mp3" loop preload="none"></audio>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
