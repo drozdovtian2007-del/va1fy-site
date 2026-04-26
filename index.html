@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7" />
+<link rel="stylesheet" href="styles.css?v=8" />
 </head>
 <body>
 
@@ -55,8 +55,14 @@
       <div class="about-text">
         <div class="section-label">01 — Обо мне</div>
         <h2>Я — Va1fy.</h2>
-        <p>Креатор, игрок, коллекционер вкусов. Я делюсь страстью к двум вещам: к фортнайту и к настоящей, честной икре.</p>
-        <p>Каждая банка — ручной отбор, холодная цепь, прямая поставка. Никакого маркетинга — только качество, которое можно попробовать.</p>
+        <ul class="about-tags">
+          <li>Игрок.</li>
+          <li>Стример.</li>
+          <li>Гурман.</li>
+          <li>Фортнайтер.</li>
+          <li>Ценитель чёрной икры.</li>
+          <li>Создатель бренда Va1fy.</li>
+        </ul>
         <div class="about-stats">
           <div><strong>6</strong><span>сортов</span></div>
           <div><strong>100%</strong><span>натурально</span></div>
@@ -89,6 +95,10 @@
           </div>
           <div class="avatar-ring"></div>
         </div>
+        <figure class="avatar-quote" id="avatar-quote">
+          <blockquote class="aq-text">«Икра — это не еда. Это ритуал, который я возвёл в искусство.»</blockquote>
+          <figcaption class="aq-author">— Va1fy</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -192,6 +202,9 @@
       <button class="rv-btn" id="rv-mute" aria-label="Mute">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
       </button>
+      <div class="rv-vol-wrap">
+        <input class="rv-vol" id="rv-vol" type="range" min="0" max="100" value="100" step="1" aria-label="Громкость">
+      </div>
     </div>
   </div>
 </div>
@@ -260,6 +273,6 @@
   }
 }
 </script>
-<script type="module" src="main.js?v=7"></script>
+<script type="module" src="main.js?v=8"></script>
 </body>
 </html>

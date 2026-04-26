@@ -415,10 +415,20 @@ if(avatarFrame){
   const photos = [
     'photo_2026-04-24_19-18-02.jpg',
     'photo_2026-04-24_22-53-55.jpg',
-    'photo_2026-04-24_23-51-32.jpg',
+    '3fc18a20-57f5-42e7-9520-65aed2be34db.png',
     'photo_2026-04-25_02-42-28.jpg',
   ];
   photos.forEach(src => { const i = new Image(); i.src = src; });
+  const quotes = [
+    { text:'«Икра — это не еда. Это ритуал, который я возвёл в искусство.»', author:'Va1fy' },
+    { text:'«Лучшая икра, которую я пробовал в жизни. Чесслово, парни.»',     author:'SirKassir' },
+    { text:'«Качество не нуждается в рекламе. Оно говорит само за себя.»',    author:'Павел Дуров' },
+    { text:'«Сделано с душой. В каждой банке — характер.»',                    author:'horshevsky' },
+  ];
+  const quoteEl  = document.getElementById('avatar-quote');
+  const quoteTxt = quoteEl ? quoteEl.querySelector('.aq-text') : null;
+  const quoteAut = quoteEl ? quoteEl.querySelector('.aq-author') : null;
+
   let photoIdx = 0;
   let flipping = false;
 
@@ -442,10 +452,17 @@ if(avatarFrame){
     flipping = true;
     avatarFrame.style.animation = 'none';
     avatarFrame.classList.add('flipping');
+    if(quoteEl) quoteEl.classList.add('aq-fade');
     setTimeout(() => {
       photoIdx = (photoIdx + 1) % photos.length;
       avatarImg.src = photos[photoIdx];
+      if(quoteTxt && quoteAut){
+        const q = quotes[photoIdx % quotes.length];
+        quoteTxt.textContent = q.text;
+        quoteAut.textContent = '— ' + q.author;
+      }
     }, 300);
+    setTimeout(() => { if(quoteEl) quoteEl.classList.remove('aq-fade'); }, 450);
     setTimeout(() => {
       avatarFrame.classList.remove('flipping');
       avatarFrame.style.transform = '';
@@ -761,6 +778,19 @@ document.querySelectorAll('.section:not(.section-hero)').forEach(s => revealObs.
     else                  { reviewVideo.pause(); setPlayState(false); }
   });
   rvMute.addEventListener('click', () => { reviewVideo.muted = !reviewVideo.muted; rvMute.style.opacity = reviewVideo.muted ? '.4' : '1'; });
+
+  const rvVol = document.getElementById('rv-vol');
+  if(rvVol){
+    const applyVol = v => {
+      reviewVideo.volume = v;
+      if(v === 0){ reviewVideo.muted = true; rvMute.style.opacity = '.4'; }
+      else { reviewVideo.muted = false; rvMute.style.opacity = '1'; }
+      rvVol.style.backgroundSize = (v*100) + '% 100%';
+    };
+    reviewVideo.volume = 1;
+    applyVol(1);
+    rvVol.addEventListener('input', () => applyVol(rvVol.value / 100));
+  }
   rvSeek.addEventListener('input', () => { if(reviewVideo.duration) reviewVideo.currentTime = rvSeek.value / 100 * reviewVideo.duration; });
 
   function hideFish(){
